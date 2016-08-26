@@ -41,7 +41,41 @@ The Riffle 0.1.8 has an on-board circuit to measure the current battery level, v
 
 <img src="pics/battery_switch.png" width=400>
 
-There is an example in the included code above, "low_power_operation.ino", that demonstrates turning the battery measurement circuit on / off.
+In "riffle_low_power_oparation.ino", we first define a constant to refer to the battery control pin, on line 18:
+
+```arduino
+const int bat_v_enable = 4; //enable pin for bat. voltage read
+```
+
+Then in setup(), we set this pin into the proper OUTPUT mode, on lines 51-53:
+
+```arduino
+// turn off the battery monitor circuitry for now, to save power
+  pinMode(bat_v_enable, OUTPUT);
+  digitalWrite(bat_v_enable, HIGH); //Turn off Battery Reading
+```
+
+In the main loop, on lines 84 and 85, we use a function we define later, 'getBat_v()', to measure the battery voltage:
+
+```arduino
+// get the battery voltage  
+  bat_v = getBat_v(bat_v_pin, bat_v_enable); //takes 20ms
+```
+This function turns the battery measurement circuit on, makes the measurement, and then turns it back off. on lines 159 - 169:
+
+```arduino
+//returns battery voltage 
+float getBat_v(byte p, byte en) {
+  float v;
+  digitalWrite(en, LOW); //write mosfet low to enable read
+  delay(10); //wait for it to settle
+  v = analogRead(p); //read voltage
+  delay(10); //wait some more...for some reason
+  digitalWrite(en, HIGH); //disable read circuit
+  v = (v * (3.3 / 1024.0)) * 2.0; //calculate actual voltage
+  return v;
+}
+```
 
 ## Switching off External Sensors
 
