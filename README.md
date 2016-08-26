@@ -12,6 +12,12 @@ Additionally, the RTC has an 'alarm' functionality that, in combination with an 
 
 <img src="pics/rtc_pin.png" width=500>
 
+In "riffle_low_power_oparation.ino" code above, this functionality is implemented by line 137:
+
+```arduino
+enterSleep(nextAlarm);
+```
+
 ## Switching off Battery Measurement Circuit
 
 The Riffle 0.1.8 has an on-board circuit to measure the current battery level, via analog pin **A3**. This is done via a simple voltage divider circuit between the battery and ground;  one issue regarding power loss is that a voltage divider will slowly leak power to ground.  To avoid this, the Riffle 0.1.8 has placed a MOSFET switch on this circuit, so that the measurement circuit can be turned "off" when the battery isn't being measured.  This functionality is controlled by pin **D4**.  
