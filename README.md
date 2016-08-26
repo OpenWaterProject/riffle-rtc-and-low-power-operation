@@ -12,7 +12,7 @@ Additionally, the RTC has an 'alarm' functionality that, in combination with an 
 
 <img src="pics/rtc_pin.png" width=500>
 
-**Code example**.  In "riffle_low_power_oparation.ino" code above, this functionality is implemented at the end of the Arduino IDE "loop" function by line 137:
+**Code example**.  In "riffle_low_power_oparation.ino" code above, sleep functionality is implemented at the end of the Arduino IDE "loop" function by line 137:
 
 ```arduino
 enterSleep(nextAlarm);
@@ -33,7 +33,11 @@ void enterSleep(DateTime& dt) { //argument is Wake Time as a DateTime object
   LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF); //power down everything until the alarm fires
 }
 ```
+Note that "enableInterrupt()" utilizes a variable we defined on line 19:
 
+```arduino
+const int rtc_int = 5; //rtc interrupt pin
+```
 
 ## Switching off Battery Measurement Circuit
 
@@ -110,6 +114,47 @@ The Riffle is typically used to log data to a microSD card.  MicroSD cards are c
 
 <img src="pics/microSD_switch.png"  width=500>
 
-Code in the example above, "low_power_operation.ino", demonstrates turning the microSD on and off.  
+**Code example**. In "riffle_low_power_oparation.ino", we first assign a variable name to the MOSFET pin **D6** on line 20:
+
+```arduino
+const int sd_pwr_enable = 6; //enable pin for SD power
+```
+
+Then, all of the action occurs in the "writeToSd()" function on lines 180 - 211:
+
+```arduino
+//Powers on SD Card, and records the give values into "data.csv"
+//Notes: The delay times are important. The SD Card initializations
+//     will fail if there isn't enough time between writing and sleeping
+void writeToSd(long t, float v, float temp) {
+  digitalWrite(led, HIGH); //LED ON, write cycle start
+  /**** POWER ON SD CARD ****/
+  digitalWrite(sd_pwr_enable, LOW); //Turn power to SD Card On
+  delay(100); //wait for power to stabilize (!!) 10ms works sometimes
+  /**** INIT SD CARD ****/
+  if (DEBUG) Serial.print("SD Card Initializing...");
+  if (!sd.begin(chipSelect)) {  //init. card
+    if (DEBUG) Serial.println("Failed!");
+    while (1); //if card fails to init. the led will stay lit.
+  }
+  if (DEBUG) Serial.println("Success");
+  /**** OPEN FILE ****/
+  if (DEBUG) Serial.print("File Opening...");
+  if (!myFile.open("data.csv", O_RDWR | O_CREAT | O_AT_END)) {  //open file
+    if (DEBUG) Serial.println("Failed!");
+    while (1);
+  }
+  if (DEBUG) Serial.println("Success");
+  /**** WRITE TO FILE ****/
+  myFile.print(t);
+  myFile.print(",");
+  myFile.print(temp);
+  myFile.print(",");
+  myFile.print(v);
+  myFile.println();
+  myFile.close();
+  digitalWrite(led, LOW); //LED will stay on if something broke
+}
+```
 
 
