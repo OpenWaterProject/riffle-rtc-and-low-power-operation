@@ -12,7 +12,7 @@ Additionally, the RTC has an 'alarm' functionality that, in combination with an 
 
 <img src="pics/rtc_pin.png" width=500>
 
-In "riffle_low_power_oparation.ino" code above, this functionality is implemented at the end of the Arduino IDE "loop" function by line 137:
+**Code example**.  In "riffle_low_power_oparation.ino" code above, this functionality is implemented at the end of the Arduino IDE "loop" function by line 137:
 
 ```arduino
 enterSleep(nextAlarm);
@@ -41,7 +41,7 @@ The Riffle 0.1.8 has an on-board circuit to measure the current battery level, v
 
 <img src="pics/battery_switch.png" width=400>
 
-In "riffle_low_power_oparation.ino", we first define a constant to refer to the battery control pin, on line 18:
+**Code example**. In "riffle_low_power_oparation.ino", we first define a constant to refer to the battery control pin, on line 18:
 
 ```arduino
 const int bat_v_enable = 4; //enable pin for bat. voltage read
@@ -87,7 +87,22 @@ Even if the main microcontroller chip is put to sleep, however, connected sensor
 
 <img src="pics/external_switch.png"  width=500>
 
-There is an example in the included code above, "low_power_operation.ino",  that demonstrates turning external power on/off.
+**Code example**. In "riffle_low_power_oparation.ino", on line 21 we define a variable for pin **D8**, for convenience:
+
+```arduino
+const int hdr_pwr_enable = 8; //enable pin for header power
+```
+On lines 100 through 106, we show how power to the 2x7 would be turned on / powered off, if external sensors were used:
+
+```arduino
+ // turn on external sensors
+  digitalWrite(hdr_pwr_enable, LOW); //Turn power external header
+
+  // make measurement
+
+  // turn off external sensors
+  digitalWrite(hdr_pwr_enable, HIGH); //Turn power external header
+``` 
 
 ## Switching off the microSD card
 
