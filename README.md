@@ -12,11 +12,28 @@ Additionally, the RTC has an 'alarm' functionality that, in combination with an 
 
 <img src="pics/rtc_pin.png" width=500>
 
-In "riffle_low_power_oparation.ino" code above, this functionality is implemented by line 137:
+In "riffle_low_power_oparation.ino" code above, this functionality is implemented at the end of the Arduino IDE "loop" function by line 137:
 
 ```arduino
 enterSleep(nextAlarm);
 ```
+
+The function "enterSleep()" (lines 148 through 157) sets the proper wake interval and cuts off power to the microSD card (see "Switching Off the MicroSD card" below):
+
+```arduino
+// Turns off SD Card Power, Sets Wake Alarm and Interrupt, and Powers down the MCU
+void enterSleep(DateTime& dt) { //argument is Wake Time as a DateTime object
+  delay(50); //Wait for file writing to finish. 10ms works somethings, 50 is more stable
+  digitalWrite(sd_pwr_enable, HIGH); //Turn off power to SD Card
+  delay(100); //wait for SD Card to power down was 100ms
+  rtc.clearAlarm(); //resets the alarm interrupt status on the rtc
+  enableInterrupt(rtc_int, rtc_interrupt, FALLING); //enables the interrupt on Pin5
+  rtc.enableAlarm(dt); //Sets the alarm on the rtc to the specified time (using the DateTime Object passed in)
+  delay(1); //wait for a moment for everything to complete
+  LowPower.powerDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF); //power down everything until the alarm fires
+}
+```
+
 
 ## Switching off Battery Measurement Circuit
 
