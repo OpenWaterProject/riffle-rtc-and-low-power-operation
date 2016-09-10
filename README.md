@@ -100,12 +100,13 @@ On lines 100 through 106, we show how power to the 2x7 would be turned on / powe
 
 ```arduino
  // turn on external sensors
-  digitalWrite(hdr_pwr_enable, LOW); //Turn power external header
+  digitalWrite(hdr_pwr_enable, LOW); //Turn ON power external header
 
   // make measurement
+  // measurement code would go here
 
   // turn off external sensors
-  digitalWrite(hdr_pwr_enable, HIGH); //Turn power external header
+  digitalWrite(hdr_pwr_enable, HIGH); //Turn OFF power external header
 ``` 
 
 ## Switching off the microSD card
